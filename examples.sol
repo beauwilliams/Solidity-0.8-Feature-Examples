@@ -49,6 +49,7 @@ contract TestToken {
     mapping(address => uint) balance;
     function transfer(address to, uint256 amount) public {
         if (amount > balance[msg.sender])
+            //NEW: We can also specify custom errors with the below syntax, taking in multiple arguments
             revert InsufficientBalance({
                 available: balance[msg.sender],
                 required: amount
@@ -72,6 +73,7 @@ contract SimpleAuction {
 
 contract TestHelper {
     function test() external view returns (uint) {
+        //NEW: We can define functions such as helpers OUTSIDE of contracts now as shown
         return helper(123);
     }
 }
@@ -93,6 +95,8 @@ contract D {
     }
 }
 
+//NOTE: Contract address can be precomputed, before the contract is deployed, using create2
+//SEE OLD METHOD HERE THAT USES ASSEMBLY CODE: https://solidity-by-example.org/app/create2/
 contract Create2 {
     function getBytes32(uint salt) external pure returns (bytes32) {
         return bytes32(salt);
@@ -104,6 +108,7 @@ contract Create2 {
             address(this),
             salt,
             keccak256(abi.encodePacked(
+                //NEW: We no longer need assembly{} syntax to encode data for create2
                 type(D).creationCode,
                 arg
             ))
@@ -115,6 +120,7 @@ contract Create2 {
     address public deployedAddr;
 
     function createDSalted(bytes32 salt, uint arg) public {
+        //NEW: We no longer need assembly{} syntax to encode data for create2
         D d = new D{salt: salt}(arg);
         deployedAddr = address(d);
     }
